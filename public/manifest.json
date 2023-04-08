@@ -13,7 +13,9 @@
     "128": "vite.svg"
   },
   "permissions": [
-    "activeTab"
+    "activeTab",
+    "storage",
+    "unlimitedStorage"
   ],
   "content_scripts": [
     {

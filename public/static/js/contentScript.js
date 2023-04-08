@@ -1,5 +1,5 @@
 const htmlToJson = (ul) => {
-  const movementsByDate = {};
+  const movementsByDate = [];
   let count = 0
 
   let date
@@ -10,10 +10,10 @@ const htmlToJson = (ul) => {
 
     if (li.classList.contains('list-operation-date-line')) { // DATE
       date = li.textContent.trim()
-      movementsByDate[date] = {
+      movementsByDate.push({
         date: date,
         movements: []
-      };
+      });
     }
 
     if (li.classList.contains('list-operation-item')) { // MOVEMENT
@@ -32,20 +32,16 @@ const htmlToJson = (ul) => {
       const amount = parseFloat(trimAmount)
 
       // Storing the movement
-      movementsByDate[date] = {
-        ...movementsByDate[date],
-        movements: [
-          ...movementsByDate[date].movements,
-          { name, category, amount }
-        ]
-      }
+      const currentDateIndex = movementsByDate.length - 1
+      movementsByDate[currentDateIndex]['movements']
+      .push({ name, category, amount })
 
       count++
     }
   });
 
   // Convert movementsByDate object to array
-  return { count, ...movementsByDate };
+  return { count, data: movementsByDate };
 }
 
 /**************** SCRIPT ****************/
