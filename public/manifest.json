@@ -1,0 +1,26 @@
+{
+  "name": "Chrome React SEO Extension",
+  "description": "The power of React and TypeScript for building interactive Chrome extensions",
+  "version": "1.0",
+  "manifest_version": 3,
+  "action": {
+    "default_popup": "index.html",
+    "default_title": "Open the popup"
+  },
+  "icons": {
+    "16": "vite.svg",
+    "48": "vite.svg",
+    "128": "vite.svg"
+  },
+  "permissions": [
+    "activeTab",
+    "storage",
+    "unlimitedStorage"
+  ],
+  "content_scripts": [
+    {
+      "matches": ["https://clients.boursorama.com/*"],
+      "js": ["./static/js/contentScript.js"]
+    }
+  ]
+}
