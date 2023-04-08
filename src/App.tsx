@@ -246,12 +246,6 @@ const JSON_EXAMPLE = {
 function App() {
   const [data, setData] = useState<JsonData|undefined>(undefined)
 
-  useEffect(() => {
-    if (data) {
-      console.log(data)
-    }
-  }, [data])
-
   const analyze = useCallback(() => {
     chrome.tabs && chrome.tabs.query({
       active: true,
@@ -272,10 +266,20 @@ function App() {
     });
   }, [])
 
+  useEffect(() => {
+    chrome.storage.local.get(["data"]).then((result) => {
+      console.log("Value currently is " + result.data);
+      if (result.data) {
+        setData(result.data)
+      }
+    });
+  })
+
   return (
     <div className="App">
       <div className="card">
-        <button onClick={() => setData(JSON_EXAMPLE)}>Analyser</button>
+        {/* <button onClick={() => setData(JSON_EXAMPLE)}>Analyser</button> */}
+        <button onClick={() => analyze()}>Analyser</button>
         {data &&
           <pre style={{ width: '100%', textAlign: 'left' }}>{JSON.stringify(data, undefined, 2)}</pre>
         }

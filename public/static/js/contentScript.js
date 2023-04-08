@@ -57,6 +57,10 @@ const messagesFromReactAppListener = (msg, sender, sendResponse) => {
 
   // console.log('[content.js]. Message received', msg);
 
+  chrome.storage.local.set({ data: movements }).then(() => {
+    console.log("Value is set to " + movements);
+  });
+
   sendResponse(movements);
 }
 
