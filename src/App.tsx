@@ -1,8 +1,13 @@
 import { useCallback, useEffect, useState } from 'react'
 import './App.css'
 import { JsonData } from './interfaces'
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import { faRedoAlt } from '@fortawesome/free-solid-svg-icons'
+import Header from './assets/components/Header'
+import ResultTable from './assets/components/Movements'
+import Categories from './assets/components/Categories'
 
-const JSON_EXAMPLE = {
+export const JSON_EXAMPLE = {
   "count": 30,
   "data": [
     {
@@ -243,8 +248,17 @@ const JSON_EXAMPLE = {
   ]
 }
 
+type Category = {
+  label: string
+  amount: number
+}
+
 function App() {
-  const [data, setData] = useState<JsonData|undefined>(undefined)
+  const [data, setData] = useState<JsonData | undefined>(JSON_EXAMPLE)
+  const [categories, setCategories] = useState<Array<Category>>([])
+
+  // use useReducer
+  // to avoid doing setData(...data, ...)
 
   const analyze = useCallback(() => {
     chrome.tabs && chrome.tabs.query({
@@ -267,23 +281,68 @@ function App() {
   }, [])
 
   useEffect(() => {
-    chrome.storage.local.get(["data"]).then((result) => {
-      console.log("Value currently is " + result.data);
-      if (result.data) {
-        setData(result.data)
-      }
-    });
+    if (chrome.storage) {
+      chrome.storage.local.get(["data"]).then((result) => {
+        console.log("Value currently is " + result.data);
+        if (result.data) {
+          setData(result.data)
+        }
+      });
+    }
   })
+
+  const createCategory = (e: any) => {
+    e.preventDefault()
+    const category: string = e.target.category.value
+    setCategories([...categories, category])
+    e.target.category.value = ''
+  }
+
+  useEffect(() => {
+    if (data) {
+      let categories: Category[] = []
+      data.data.forEach(date => {
+        date.movements.forEach(movement => {
+          // creating default categories
+          if (!categories.some(c => c.label === movement.category)) {
+            categories = [...categories, { label: movement.category, amount: 0 }]
+          }
+
+          // finding the category and updating its amount
+          const category = categories.find(c => c.label === movement.category);
+          if (category) {
+            category.amount += movement.amount;
+          }
+        })
+      });
+      setCategories(categories)
+    }
+  }, [data])
+
+  useEffect(() => {
+    console.log(categories)
+  }, [categories])
 
   return (
     <div className="App">
-      <div className="card">
-        {/* <button onClick={() => setData(JSON_EXAMPLE)}>Analyser</button> */}
-        <button onClick={() => analyze()}>Analyser</button>
-        {data &&
-          <pre style={{ width: '100%', textAlign: 'left' }}>{JSON.stringify(data, undefined, 2)}</pre>
-        }
-      </div>
+      <Header
+        data={data}
+        setData={setData}
+      // analyze={analyze}
+      />
+      <Categories categories={categories} />
+      {data &&
+        <>
+          <div className="categories">
+            <form onSubmit={(e) => createCategory(e)}>
+              <input name="category" type="text" />
+              <button type='submit'>Créer</button>
+            </form>
+          </div>
+          <ResultTable data={data} categories={categories} />
+        </>
+      }
+      {/* {data && <pre style={{ width: '100%', textAlign: 'left' }}>{JSON.stringify(data, undefined, 2)}</pre>} */}
     </div>
   )
 }

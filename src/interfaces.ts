@@ -6,7 +6,7 @@ export interface JsonData {
 type Movement = {
   name: string,
   category: string,
-  amount: number
+  amount: number,
 }
 
 interface MovementsByDate {
