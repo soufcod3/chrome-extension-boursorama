@@ -1,19 +1,14 @@
 const htmlToJson = (ul) => {
-  const movementsByDate = [];
-  let count = 0
+  const transactions = [];
 
   let date
   let name
   let category
+  let id = 1
 
   ul.querySelectorAll('li').forEach(li => {
-
     if (li.classList.contains('list-operation-date-line')) { // DATE
       date = li.textContent.trim()
-      movementsByDate.push({
-        date: date,
-        movements: []
-      });
     }
 
     if (li.classList.contains('list-operation-item')) { // MOVEMENT
@@ -32,36 +27,35 @@ const htmlToJson = (ul) => {
       const amount = parseFloat(trimAmount)
 
       // Storing the movement
-      const currentDateIndex = movementsByDate.length - 1
-      movementsByDate[currentDateIndex]['movements']
-      .push({ name, category, amount })
+      transactions.push({ id, name, category, amount, date })
 
-      count++
+      id++
     }
   });
 
-  // Convert movementsByDate object to array
-  return { count, data: movementsByDate };
+  // Convert transactions object to array
+  return transactions;
 }
 
 /**************** SCRIPT ****************/
 
 const messagesFromReactAppListener = (msg, sender, sendResponse) => {
 
+
   const ul = document.querySelector('.list__movement')
 
-  const movements = htmlToJson(ul)
+  const transactions = htmlToJson(ul)
 
   // Log the final JSON output
-  console.log(JSON.stringify(movements, null, 2));
+  console.log(JSON.stringify(transactions, null, 2));
 
   // console.log('[content.js]. Message received', msg);
 
-  chrome.storage.local.set({ data: movements }).then(() => {
-    console.log("Value is set to " + movements);
+  chrome.storage.local.set({ transactions }).then(() => {
+    console.log("Value is set to " + transactions);
   });
 
-  sendResponse(movements);
+  sendResponse(transactions);
 }
 
 chrome.runtime.onMessage.addListener(messagesFromReactAppListener);

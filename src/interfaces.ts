@@ -1,15 +1,17 @@
-export interface JsonData {
-  count: number,
-  data: MovementsByDate[]
-}
-
-type Movement = {
+export type Transaction = {
+  id: number,
   name: string,
-  category: string,
+  category?: string,
   amount: number,
+  date: string
 }
 
-interface MovementsByDate {
+export interface TransactionsByDate {
   date: string,
-  movements: Movement[]
+  transactions: Transaction[]
+}
+
+export type Category = {
+  label: string
+  amount: number
 }

@@ -1,6 +1,11 @@
 import React from 'react'
+import { Category } from '../../interfaces'
 
-const Categories = ({categories}) => {
+interface CategoriesSectionProps {
+  categories: Category[]
+}
+
+const CategoriesSection = ({categories}: CategoriesSectionProps) => {
   return (
     <section className="categories">
       <div className="d-flex row">
@@ -19,4 +24,4 @@ const Categories = ({categories}) => {
   )
 }
 
-export default Categories
+export default CategoriesSection

@@ -1,29 +1,29 @@
 import React from 'react'
-import { JsonData } from '../../interfaces'
-import { JSON_EXAMPLE } from '../../App'
+import { Transaction, TransactionsByDate } from '../../interfaces'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faRedoAlt } from '@fortawesome/free-solid-svg-icons'
+import { TRANSACTIONS } from '../../App'
 
 interface HeaderProps {
-  data?: JsonData
-  setData: (data: JsonData) => void
+  transactions?: Transaction[]
+  setTransactions: (data: Transaction[]) => void
   analyze?: () => void
 }
 
-const Header = ({ data, setData, analyze = undefined }: HeaderProps) => {
+const Header = ({ transactions, setTransactions, analyze = undefined }: HeaderProps) => {
 
   return (
     <section className='header text-center'>
       {
-        data ?
+        transactions ?
           <div className='d-flex justify-content-between w-100'>
-            <p className='fw-bold'>{data.count} mouvements</p>
+            {/* <p className='fw-bold'>{data.count} mouvements</p> */}
             <div className='d-flex align-items-center gap-3'>
               {
                 analyze ?
                   <button onClick={() => analyze()}><FontAwesomeIcon icon={faRedoAlt} /></button>
-                  :
-                  <button onClick={() => setData(JSON_EXAMPLE)}><FontAwesomeIcon icon={faRedoAlt} /></button>
+                  : 
+                  <button onClick={() => setTransactions(TRANSACTIONS)}><FontAwesomeIcon icon={faRedoAlt} /></button>
               }
               <p className='fw-bold'>Logo</p>
             </div>
@@ -31,12 +31,12 @@ const Header = ({ data, setData, analyze = undefined }: HeaderProps) => {
           :
           <>
             <p className='fw-bold'>Logo</p>
-            {
+            {/* {
               analyze ?
                 <button onClick={() => analyze()}>Analyser</button>
                 :
-                <button onClick={() => setData(JSON_EXAMPLE)}>Analyser</button>
-            }
+                <button onClick={() => setTransactionsByDate(TRANSACTIONS_BY_DATE.data)}>Analyser</button>
+            } */}
           </>
       }
     </section>
