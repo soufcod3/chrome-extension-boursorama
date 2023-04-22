@@ -47,12 +47,12 @@ const messagesFromReactAppListener = (msg, sender, sendResponse) => {
   const transactions = htmlToJson(ul)
 
   // Log the final JSON output
-  console.log(JSON.stringify(transactions, null, 2));
+  // console.log(JSON.stringify(transactions, null, 2));
 
   // console.log('[content.js]. Message received', msg);
 
   chrome.storage.local.set({ transactions }).then(() => {
-    console.log("Value is set to " + transactions);
+    console.log("Transactions found : " + transactions.length);
   });
 
   sendResponse(transactions);
