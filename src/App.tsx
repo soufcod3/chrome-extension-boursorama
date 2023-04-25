@@ -217,7 +217,7 @@ export const TRANSACTIONS = [
   }
 ]
 
-const TRANSACTION_NEW = [
+const TRANSACTIONS_NEW = [
   {
     "id": 1,
     "name": "CARTE 31/03/23 AMZN Mktp FR*JR4X CB*3630",
@@ -521,16 +521,30 @@ const TRANSACTION_NEW = [
   }
 ]
 
-export const TransactionContext = createContext<Transaction[]|undefined>(undefined);
+interface TransactionContextType {
+  transactions: Transaction[]|null;
+  updateTransactions: (updatedTransactions: Transaction[]) => void;
+}
+
+export const TransactionContext = createContext<TransactionContextType>({
+  transactions: [],
+  updateTransactions: () => []
+})
 
 function App() {
 
-  const [transactions, setTransactions] = useState<Array<Transaction> | undefined>(TRANSACTIONS)
+  const [transactions, setTransactions] = useState<Transaction[]|null>(null)
+
+  const updateTransactions = (updatedTransactions: Transaction[]) => {
+    setTransactions(updatedTransactions);
+  }
 
   // Using Chrome Storage if exists
   useEffect(() => {
     if (chrome.storage) {
+      console.log('ACTIVE CHROME STORAGE')
       chrome.storage.local.get(["transactions"]).then((res) => {
+        console.log('RES CHROME STORAGE', res)
         console.log("Value currently is " + res.transactions);
         if (res.transactions) {
           setTransactions(res.transactions)
@@ -545,24 +559,29 @@ function App() {
       currentWindow: true
     }, (tabs) => {
       chrome.tabs.sendMessage(tabs[0].id || 0, { type: 'GET_DOM' }, (response: any) => {
-          console.log('RES', response)
-          setTransactions(response)
-        });
+        console.log('RES', response)
+        setTransactions(response)
+      });
     });
   }, [])
 
+  // SYNC Chrome Storage with Local Transactions
   useEffect(() => {
-    console.log('transactions', transactions)
+    if (transactions && chrome.storage) {
+      chrome.storage.local.set({ transactions }).then(() => {
+        console.log("Transactions found : " + transactions.length);
+      });
+    }
   }, [transactions])
 
   return (
-    <TransactionContext.Provider value={transactions} >
-    <div className="App">
-      <button onClick={() => setTransactions(TRANSACTION_NEW)}>Analyser</button>
-      <Categories />
-      <TransactionsList />
-      {transactions && <pre style={{ width: '100%', textAlign: 'left' }}>{JSON.stringify(transactions, undefined, 2)}</pre>}
-    </div>
+    <TransactionContext.Provider value={{transactions, updateTransactions}} >
+      <div className="App">
+        <button onClick={() => fetchTransactions()}>Analyser</button>
+        <Categories />
+        <TransactionsList />
+        {transactions && <pre style={{ width: '100%', textAlign: 'left' }}>{JSON.stringify(transactions, undefined, 2)}</pre>}
+      </div>
     </TransactionContext.Provider>
   )
 }
